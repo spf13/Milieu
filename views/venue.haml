@@ -1,0 +1,28 @@
+.container-fluid
+  .row-fluid
+    .span4
+      %h2= @venue['name'].to_s
+      %p
+        =@venue['location']['address'].to_s
+        %br= @venue['location']['city'].to_s + ' ' + @venue['location']['state'].to_s + ' ' + @venue['location']['postalCode'].to_s
+      %p
+        %a.btn.btn-primary.btn-large{:href => '/venue/' + @venue['_id'].to_s + '/checkin'}
+          Check In Here
+      %p
+        =@venue['stats']['usersCount'].ceil.to_s + ' users have checked in here ' + @venue['stats']['checkinsCount'].ceil.to_s + ' times'
+      %p=user_times_at
+    .span8
+      %image{:src => '' << gmap_url(@venue, {:height => 300, :width => 450}) }
+  .row-fluid
+    .span12
+      %h1 Nearby Venues
+  .row-fluid
+    - @nearby_venues.each do |nearby|
+      .span3
+        %h2
+          %a{:href => '/venue/' + nearby['_id'].to_s}= nearby['name'].to_s
+        %p
+          =nearby['location']['address'].to_s
+          %br= nearby['location']['city'].to_s + ' ' + nearby['location']['state'].to_s + ' ' + nearby['location']['postalCode'].to_s
+          %a{:href => '/venue/' + nearby['_id'].to_s}
+            %image{:src => '' << gmap_url(nearby, {:height => 150, :width => 150, :zoom => 17}) }

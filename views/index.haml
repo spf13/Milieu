@@ -1,0 +1,37 @@
+.container-fluid
+  .row-fluid
+    .span8
+      %h1 Welcome to Milieu
+      %img{:src => 'images/big_map.png'}
+      %p Milieu is an open source ruby based MongoDB backed location check in app. It was first demonstrated at OSCON 2012 as a sample application for a tutorial on MongoDB.
+      %p It uses Sinatra, Haml and MongoDB.
+
+    .span4
+      .well
+        -if logged_in?
+          You are logged in. Go checkin somewhere.
+        -else
+          %h3 Login
+          %form{ :action => "/login", :method => "post"}
+            %br
+            %p Email Address:
+            %input.form-input{ :name => "email", :type => "text", :size => "20", :value => ""}
+            %p Password:
+            %input.form-input{ :name => "password", :type => "password", :size => "20", :value => ""}
+            %br
+            %br
+            %input.btn-large.btn-primary{ :name => "submit", :type => "submit", :value => "Submit"}
+
+      -if !logged_in?
+        .well
+          %h3 Join Us
+          %form{ :action => "/register", :method => "post"}
+            %p Name: 
+            %input.form-input{ :name => "name", :type => "text", :size => "30"}
+            %p Email:
+            %input.form-input{ :name => "email", :type => "text", :size => "30"}
+            %p Password:
+            %input.form-input{ :name => "password", :type => "password", :size => "30"}
+            %br
+            %br
+            %input.btn{ :name => "submit", :type => "submit", :value => "Submit"}

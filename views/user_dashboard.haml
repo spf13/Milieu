@@ -1,0 +1,14 @@
+.container
+  .content
+    .page-header
+      -unless @suser == nil?
+        %h2="Dashboard"
+        %br
+        %image{src: "http://www.gravatar.com/avatar/" << @suser.email_hash.to_s << '.png'}
+
+        %h3= @suser.name.to_s
+      -else
+        redirect '/'
+      %small
+        %a{href: "/user/" << @suser.email.to_s << "/profile"} profile
+    .container#main-topic-nav

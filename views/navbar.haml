@@ -1,0 +1,26 @@
+.navbar.navbar-fixed-top
+  .navbar-inner
+    .container-fluid
+      %a.btn.btn-navbar{ "data-toggle".to_sym => "collapse", "data-target".to_sym => ".nav-collapse"}
+        %span.icon-bar
+          %span.icon-bar
+            %span.icon-bar
+              %a.brand{:href => '/'} Milieu
+      .nav-collapse
+        %ul.nav
+          %li
+            %a{:href => '/'}Home
+          %li
+            %a{:href => '/venues'}Venues
+          %li
+            %a{:href => '/register'}Register
+        %p.navbar-text.pull-right
+          -if logged_in?
+            %a{:href => "/user/" << @suser.email.to_s << "/dashboard"} 
+              %image{:height => 30, :width => 30, :src => "http://www.gravatar.com/avatar/" << @suser.email_hash.to_s << '.png' }
+              #{@suser.email} 
+            |
+            %a{:href => "/logout" } Logout
+
+          -else
+            %a{:href => '/login'} Login
