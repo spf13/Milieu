@@ -98,7 +98,7 @@ end
 
 # Listing the venues.
 # As a warning, this approach to pagination isn't especially effective
-# when dealing with large result sets.
+# when dealing with very large result sets.
 get '/venues/?:page?' do
   @page = params.fetch('page', 1).to_i
   num_per_page = 10
