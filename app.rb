@@ -99,7 +99,7 @@ end
 get '/venue/:_id' do
   object_id = BSON::ObjectId.from_string(params[:_id])
   @venue = VENUES.find_one({ :_id => object_id })
-  @user = User.new_from_email(@suser.email)
+  @user = User.new_from_email(@suser.email) if logged_in?
   @nearby_venues = VENUES.find(
       { :'location.geo' => 
           { :$near => [ @venue['location']['geo'][0],
