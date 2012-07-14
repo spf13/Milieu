@@ -14,3 +14,4 @@ end
 USERS      = DB['users']
 VENUES     = DB['venues']
 CHECKINS   = DB['checkins']
+VENUES.ensure_index([["location.geo"], Mongo::GEO2D])
