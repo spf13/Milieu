@@ -164,7 +164,8 @@ get '/venue/:_id/checkin' do
 
   # Simultaneously add the users checkin to the venue & return it.
   user = USERS.find_and_modify(:query => { :_id => @suser._id}, :update => {:$inc => { "venues." << object_id.to_s << ".count" => 1 },
-                                                                            :$push => { "venues." << object_id.to_s << ".timestamp" => Time.now }}, :new => 1)
+                                                                            :$push => { "venues." << object_id.to_s << ".timestamp" => Time.now },
+                                                                            :$set => { "last_checkin_ts" => Time.now}}, :new => 1)
 
   # If it's the first time, increment both checkins and users counts
   if user['venues'][params[:_id]]['count'] == 1
