@@ -8,8 +8,6 @@ helpers do
             times << '0'
         end
         times << ' times'
-    else
-        times = 'Please <a href=\'/login\'>login</a> to join them.'
     end
   end
 

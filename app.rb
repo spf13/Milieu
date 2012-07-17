@@ -32,7 +32,11 @@ end
 post '/login' do
   if session[:user] = User.auth(params["email"], params["password"])
     flash("Login successful")
-    redirect "/user/" << session[:user].email << "/dashboard"
+    if ! params[:callback_venue].nil?
+      redirect "/venue/" << params[:callback_venue] 
+    else
+      redirect "/user/" << session[:user].email << "/dashboard"
+    end
   else
     flash("Login failed - Try again")
     redirect '/login'
