@@ -25,9 +25,10 @@
                   %p
                     %b Locations Visited
                     =@user['stats']['num_locations'].to_s
-                  %p
-                    %b Last Checked In On
-                  %p=@user['last_checkin_ts']
+                  -if @user['last_checkin_ts']
+                    %p
+                      %b Last Checked In On
+                    %p=@user['last_checkin_ts']
               %td{valign: "top"}
                 %h2 Checkins
                 %image{:src => '' << gmap_multi_url(@venues, {:height => 600, :width => 800}) }
