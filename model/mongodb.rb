@@ -1,6 +1,7 @@
 require 'mongo'
 require './model/mongoModule'
 require './model/user'
+require './model/venue'
 
 if ENV['RACK_ENV'] == 'production'
   db = URI.parse(ENV['MONGOHQ_URL'])

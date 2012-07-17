@@ -11,6 +11,9 @@
           %input.form-input{ :name => "email", :type => "text", :size => "30"}
           %p Password:
           %input.form-input{ :name => "password", :type => "password", :size => "30"}
+          -if @suser.admin
+            %p Admin 
+            %input.form-input{ :name => "admin", :type => "checkbox"}
           %br
           %br
           %input.btn{ :name => "submit", :type => "submit", :value => "Submit"}

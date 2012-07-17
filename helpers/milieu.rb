@@ -3,7 +3,7 @@ helpers do
     if logged_in?
         times = 'You have checked in here '
         if !@user.venues.nil? && !@user.venues[params[:_id]].nil? 
-            times << @user.venues[params[:_id]].to_s 
+            times << @user.venues[params[:_id]]['count'].to_s 
         else
             times << '0'
         end
@@ -13,12 +13,22 @@ helpers do
     end
   end
 
-  def gmap_url(venue, options = {})
+  def gmap_multi_url(venues, options = {})
+    default_options = {:zoom => 1, :center => MapLocation.new(:longitude => 0.0, :latitude => 0.0)}
+    map = GoogleStaticMap.new(default_options.merge(options))
+    venues.each do |venue|
       maplocation = MapLocation.new(:longitude => venue['location']['geo'][0], :latitude => venue['location']['geo'][1] )
-      default_options = {:zoom => 16, :center => maplocation}
-      map = GoogleStaticMap.new(default_options.merge(options))
       map.markers << MapMarker.new(:color => "blue", :location => maplocation)
-      map.url(:auto)
+    end
+    map.url(:auto)
+  end
+  
+  def gmap_url(venue, options = {})
+    maplocation = MapLocation.new(:longitude => venue['location']['geo'][0], :latitude => venue['location']['geo'][1] )
+    default_options = {:zoom => 16, :center => maplocation}
+    map = GoogleStaticMap.new(default_options.merge(options))
+    map.markers << MapMarker.new(:color => "blue", :location => maplocation)
+    map.url(:auto)
   end
 
   def pager(cur_path)
