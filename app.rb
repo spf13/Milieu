@@ -90,16 +90,19 @@ get '/user/:email/dashboard' do
 
   # Compute stats
   @user['stats'] = {}
-  @user['stats']['num_locations'] = @user['venues'].count.to_i
+  @user['stats']['num_locations'] = 0
   @user['stats']['total_checkins'] = 0
-  @user['venues'].values.each do |v|
-    @user['stats']['total_checkins'] += v['count'].to_i
-  end
-  # Get the venues for this user into a variable.
-  @venues = Array.new
-  @user['venues'].keys.each do |k|
-    venue = VENUES.find_one({:_id => BSON::ObjectId(k)})
-    @venues.push(venue)
+  if @user['venues'] != nil
+    @user['stats']['num_locations'] = @user['venues'].count.to_i
+    @user['venues'].values.each do |v|
+      @user['stats']['total_checkins'] += v['count'].to_i
+    end
+    # Get the venues for this user into a variable.
+    @venues = Array.new
+    @user['venues'].keys.each do |k|
+      venue = VENUES.find_one({:_id => BSON::ObjectId(k)})
+      @venues.push(venue)
+    end
   end
   haml :user_dashboard
 end
@@ -151,6 +154,9 @@ get '/venue/:_id' do
           }
       }).limit(4).skip(1)
 
+  # Get the mayor user's name.
+  @mayor = USERS.find_one({:_id => @venue['mayor']})
+
   # Render the template
   haml :venue
 end
@@ -161,6 +167,7 @@ get '/venue/:_id/checkin' do
 
   # Query for the venue from MongoDB based on the ObjectId
   @venue = VENUES.find_one({ :_id => object_id })
+  mayor = USERS.find_one({:_id => @venue['mayor']})
 
   # Simultaneously add the users checkin to the venue & return it.
   user = USERS.find_and_modify(:query => { :_id => @suser._id}, :update => {:$inc => { "venues." << object_id.to_s << ".count" => 1 },
@@ -173,6 +180,14 @@ get '/venue/:_id/checkin' do
   # Else, just the increment the checkins
   else
       VENUES.update({ _id: @venue['_id']}, { :$inc => { :'stats.checkinsCount' => 1}})
+  end
+  
+  if mayor
+    if mayor['venues'][object_id.to_s]['count'] < user['venues'][object_id.to_s]['count']
+      VENUES.update({:_id => @venue['_id']}, {:$set => {:'mayor' => @suser._id}})
+    end
+  else
+    VENUES.update({:_id => @venue['_id']}, {:$set => {:'mayor' => @suser._id}})
   end
   flash('Thanks for checking in')
   redirect '/venue/' + params[:_id]

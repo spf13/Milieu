@@ -11,6 +11,10 @@
       %p
         =@venue['stats']['usersCount'].ceil.to_s + ' users have checked in here ' + @venue['stats']['checkinsCount'].ceil.to_s + ' times'
       %p=user_times_at
+      -if @mayor
+        %p
+          %b Mayor
+          =@mayor['name']
     .span8
       %image{:src => '' << gmap_url(@venue, {:height => 300, :width => 450}) }
   .row-fluid

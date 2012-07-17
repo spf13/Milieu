@@ -16,9 +16,11 @@ helpers do
   def gmap_multi_url(venues, options = {})
     default_options = {:zoom => 1, :center => MapLocation.new(:longitude => 0.0, :latitude => 0.0)}
     map = GoogleStaticMap.new(default_options.merge(options))
-    venues.each do |venue|
-      maplocation = MapLocation.new(:longitude => venue['location']['geo'][0], :latitude => venue['location']['geo'][1] )
-      map.markers << MapMarker.new(:color => "blue", :location => maplocation)
+    if venues != nil
+      venues.each do |venue|
+        maplocation = MapLocation.new(:longitude => venue['location']['geo'][0], :latitude => venue['location']['geo'][1] )
+        map.markers << MapMarker.new(:color => "blue", :location => maplocation)
+      end
     end
     map.url(:auto)
   end
