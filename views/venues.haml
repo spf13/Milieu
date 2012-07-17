@@ -1,7 +1,7 @@
 .container
   .content
     %h2 Venues
-    -if @suser.admin
+    -if @suser and @suser.admin
       %a.btn.btn-primary.btn-large{:href => '/venues/create'}
         Add Venue
 
