@@ -50,11 +50,21 @@ get '/register' do
 end
 
 post '/register' do
+	if params[:admin] and !session[:user].admin
+		flash("Not an admin.")
+		redirect '/'
+	end
+
   # Creating and populating a new user object from the DB
   u            = User.new
   u.email      = params[:email]
   u.password   = params[:password]
   u.name       = params[:name]
+	if params[:admin]
+		u.admin = true
+	else
+		u.admin = false
+	end
 
   # Attempt to save the user to the DB
   if u.save()
@@ -75,6 +85,25 @@ post '/register' do
 end
 
 get '/user/:email/dashboard' do
+  # Get the user's details.
+  @user = USERS.find_one({:_id => session[:user]._id})
+
+  # Compute stats
+  @user['stats'] = {}
+  @user['stats']['num_locations'] = 0
+  @user['stats']['total_checkins'] = 0
+  if @user['venues'] != nil
+    @user['stats']['num_locations'] = @user['venues'].count.to_i
+    @user['venues'].values.each do |v|
+      @user['stats']['total_checkins'] += v['count']
+    end
+    # Get the venues for this user into a variable.
+    @venues = Array.new
+    @user['venues'].keys.each do |k|
+      venue = VENUES.find_one({:_id => BSON::ObjectId(k)})
+      @venues.push(venue)
+    end
+  end
   haml :user_dashboard
 end
 
@@ -99,11 +128,11 @@ end
 # Listing the venues.
 # As a warning, this approach to pagination isn't especially effective
 # when dealing with very large result sets.
-get '/venues/?:page?' do
-  @page = params.fetch('page', 1).to_i
+get '/venues/p/?:page?' do
+  @page = params.fetch('page', :page).to_i
   num_per_page = 10
   @venues = VENUES.find.skip(( @page - 1 ) * num_per_page).limit(num_per_page)
-  @total_pages = (VENUES.count.to_i / num_per_page).ceil
+  @total_pages = (VENUES.count.to_f / num_per_page).ceil
   haml :venues
 end
 
@@ -125,6 +154,9 @@ get '/venue/:_id' do
           }
       }).limit(4).skip(1)
 
+  # Get the mayor user's name.
+  @mayor = USERS.find_one({:_id => @venue['mayor']})
+
   # Render the template
   haml :venue
 end
@@ -135,17 +167,92 @@ get '/venue/:_id/checkin' do
 
   # Query for the venue from MongoDB based on the ObjectId
   @venue = VENUES.find_one({ :_id => object_id })
+  mayor = USERS.find_one({:_id => @venue['mayor']})
 
   # Simultaneously add the users checkin to the venue & return it.
-  user = USERS.find_and_modify(:query => { :_id => @suser._id}, :update => {:$inc => { "venues." << object_id.to_s => 1 } }, :new => 1)
+  timestamp = Time.now
+  user = USERS.find_and_modify(:query => { :_id => @suser._id}, :update => {:$inc => {"venues." << object_id.to_s << ".count" => 1},
+                                                                            :$set => {"venues." << object_id.to_s << ".last_checkin_ts" => timestamp,
+                                                                                      "last_checkin_ts" => timestamp,
+                                                                                      "last_checkin_name" => @venue['name']}}, :new => 1)
 
   # If it's the first time, increment both checkins and users counts
-  if user['venues'][params[:_id]] == 1
+  if user['venues'][params[:_id]]['count'] == 1
       VENUES.update({ :_id => @venue['_id']}, { :$inc => { :'stats.usersCount' => 1, :'stats.checkinsCount' => 1}})
   # Else, just the increment the checkins
   else
       VENUES.update({ _id: @venue['_id']}, { :$inc => { :'stats.checkinsCount' => 1}})
   end
+  
+  # Update the checkin collection
+  c = CHECKINS.find_one({:venue_id => object_id, :user_id => @suser._id})
+  if c
+    CHECKINS.update({:_id => c['_id']}, {:$push => {'timestamps' => timestamp}})
+  else
+    c = Checkin.new
+    c.venue_id = object_id
+    c.user_id = @suser._id
+    c.timestamps = Array.new
+    c.timestamps.push(timestamp)
+    
+    if !c.save()
+      flash('Your checkin failed')
+      redirect('/venue/:_id')
+    end
+  end
+  
+  if mayor
+    if mayor['venues'][object_id.to_s]['count'] < user['venues'][object_id.to_s]['count']
+      VENUES.update({:_id => @venue['_id']}, {:$set => {:'mayor' => @suser._id}})
+    end
+  else
+    VENUES.update({:_id => @venue['_id']}, {:$set => {:'mayor' => @suser._id}})
+  end
   flash('Thanks for checking in')
   redirect '/venue/' + params[:_id]
+end
+
+get '/venues/create' do
+  if session[:user].admin
+    haml :venues_create
+  else
+    flash('Not an admin')
+    redirect '/'
+  end
+end
+
+post '/venues/create' do
+  if !session[:user].admin
+    flash('Not an admin')
+    redirect '/'
+  end
+  v = Venue.new
+  v.name = params[:name]
+  v.location = {
+    'address' => params[:address],
+    'cc' => params[:cc],
+    'city' => params[:city],
+    'country' => params[:country],
+    'geo' => [params[:longitude].to_f, params[:latitude].to_f],
+    'postalCode' => params[:postalCode],
+    'state' => params[:state],
+  }
+  v.stats = {
+    'checkinsCount' => 0,
+    'usersCount' => 0
+  }
+  
+  # Attempt to save the venue to the DB
+  if v.save()
+    flash("Venue Created")
+    redirect '/venues/p/1'
+  else
+    # Else, display errors
+    tmp = []
+    u.errors.each do |e|
+      tmp << (e.join("<br/>"))
+    end
+    flash(tmp)
+    redirect 'venues/create'
+  end
 end

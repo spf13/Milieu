@@ -1,6 +1,10 @@
 .container
   .content
     %h2 Venues
+    -if @suser and @suser.admin
+      %a.btn.btn-primary.btn-large{:href => '/venues/create'}
+        Add Venue
+
     %table.table.table-striped
       %thead
         %tr
@@ -19,4 +23,4 @@
           %td= venue['location']['geo'][1].round(2)
 
 
-    =pager('/venues')
+    =pager('/venues/p')
