@@ -95,7 +95,7 @@ get '/user/:email/dashboard' do
   if @user['venues'] != nil
     @user['stats']['num_locations'] = @user['venues'].count.to_i
     @user['venues'].values.each do |v|
-      @user['stats']['total_checkins'] += v['count'].to_i
+      @user['stats']['total_checkins'] += v['count']
     end
     # Get the venues for this user into a variable.
     @venues = Array.new
@@ -170,9 +170,11 @@ get '/venue/:_id/checkin' do
   mayor = USERS.find_one({:_id => @venue['mayor']})
 
   # Simultaneously add the users checkin to the venue & return it.
-  user = USERS.find_and_modify(:query => { :_id => @suser._id}, :update => {:$inc => { "venues." << object_id.to_s << ".count" => 1 },
-                                                                            :$push => { "venues." << object_id.to_s << ".timestamp" => Time.now },
-                                                                            :$set => { "last_checkin_ts" => Time.now}}, :new => 1)
+  timestamp = Time.now
+  user = USERS.find_and_modify(:query => { :_id => @suser._id}, :update => {:$inc => {"venues." << object_id.to_s << ".count" => 1},
+                                                                            :$set => {"venues." << object_id.to_s << ".last_checkin_ts" => timestamp,
+                                                                                      "last_checkin_ts" => timestamp,
+                                                                                      "last_checkin_name" => @venue['name']}}, :new => 1)
 
   # If it's the first time, increment both checkins and users counts
   if user['venues'][params[:_id]]['count'] == 1
@@ -180,6 +182,23 @@ get '/venue/:_id/checkin' do
   # Else, just the increment the checkins
   else
       VENUES.update({ _id: @venue['_id']}, { :$inc => { :'stats.checkinsCount' => 1}})
+  end
+  
+  # Update the checkin collection
+  c = CHECKINS.find_one({:venue_id => object_id, :user_id => @suser._id})
+  if c
+    CHECKINS.update({:_id => c['_id']}, {:$push => {'timestamps' => timestamp}})
+  else
+    c = Checkin.new
+    c.venue_id = object_id
+    c.user_id = @suser._id
+    c.timestamps = Array.new
+    c.timestamps.push(timestamp)
+    
+    if !c.save()
+      flash('Your checkin failed')
+      redirect('/venue/:_id')
+    end
   end
   
   if mayor

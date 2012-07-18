@@ -8,6 +8,9 @@ helpers do
             times << '0'
         end
         times << ' times'
+        if !@user.venues.nil? && !@user.venues[params[:_id]].nil?
+          times << '<br/>You checked in here last on ' << @user.venues[params[:_id]]['last_checkin_ts'].to_s
+        end
     else
         times = 'Please <a href=\'/login\'>login</a> to join them.'
     end
