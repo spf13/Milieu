@@ -5,6 +5,7 @@ require './model/mongodb'
 require 'haml'
 require 'digest/md5'
 require 'googlestaticmap'
+require 'base64'
 
 
 configure do
@@ -148,4 +149,29 @@ get '/venue/:_id/checkin' do
   end
   flash('Thanks for checking in')
   redirect '/venue/' + params[:_id]
+end
+
+post '/venue/:_id/image' do
+  unless params['image'].nil?
+    # Converting the string _id from the url into an ObjectId
+    object_id = BSON::ObjectId.from_string(params[:_id])
+
+    # BSON is expecting a UTF-8 string, so serialize the image
+    image = Base64.encode64(params['image'][:tempfile].read())
+    venue_id = BSON::ObjectId.from_string(params[:_id])
+
+    VENUES.update({ :_id => venue_id}, { :$set => { :'image' => image}})
+  else
+    flash("Please upload an image")
+  end
+  redirect '/venue/' + params[:_id]
+end
+
+get '/venue/:_id/image' do
+  venue_id = BSON::ObjectId.from_string(params[:_id])
+  venue = VENUES.find_one({ :_id => venue_id});
+  content_type 'image/png'
+
+  # Convert the serialized image back to raw data
+  Base64.decode64(venue['image'])
 end
