@@ -17,7 +17,7 @@
       -if logged_in? && @suser.admin
         %p 
           %form{:method=>'POST',:action=>'/venue/' + @venue['_id'].to_s + '/image', :enctype=>'multipart/form-data'}
-            %button{:type=>'submit',:value=>'Upload Venue Image'}
+            %input{:type=>'submit',:value=>'Upload Venue Image'}
             %input{:type=>'file',:name=>'image'}
     .span6
       %image{:src => '' << gmap_url(@venue, {:height => 300, :width => 450}) }

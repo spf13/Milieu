@@ -14,9 +14,6 @@
             %a{:href => '/venues'}Venues
           %li
             %a{:href => '/register'}Register
-          -if logged_in? && @suser.admin
-            %li
-              %a{:href => '/import'}Import
         %p.navbar-text.pull-right
           -if logged_in?
             %a{:href => "/user/" << @suser.email.to_s << "/dashboard"} 
