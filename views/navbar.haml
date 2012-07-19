@@ -19,6 +19,8 @@
             %a{:href => "/user/" << @suser.email.to_s << "/dashboard"} 
               %image{:height => 30, :width => 30, :src => "http://www.gravatar.com/avatar/" << @suser.email_hash.to_s << '.png' }
               #{@suser.email} 
+            -if @suser.admin
+              (Admin)
             |
             %a{:href => "/logout" } Logout
 
