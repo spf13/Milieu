@@ -1,7 +1,10 @@
 .container-fluid
   .row-fluid
-    .span4
+    .span6
       %h2= @venue['name'].to_s
+      -if !@venue['image'].nil?
+        %p 
+          %image{:src => '/venue/' + @venue['_id'].to_s + '/image'}
       %p
         =@venue['location']['address'].to_s
         %br= @venue['location']['city'].to_s + ' ' + @venue['location']['state'].to_s + ' ' + @venue['location']['postalCode'].to_s
@@ -11,7 +14,12 @@
       %p
         =@venue['stats']['usersCount'].ceil.to_s + ' users have checked in here ' + @venue['stats']['checkinsCount'].ceil.to_s + ' times'
       %p=user_times_at
-    .span8
+      -if logged_in? && @suser.admin
+        %p 
+          %form{:method=>'POST',:action=>'/venue/' + @venue['_id'].to_s + '/image', :enctype=>'multipart/form-data'}
+            %input{:type=>'submit',:value=>'Upload Venue Image'}
+            %input{:type=>'file',:name=>'image'}
+    .span6
       %image{:src => '' << gmap_url(@venue, {:height => 300, :width => 450}) }
   .row-fluid
     .span12

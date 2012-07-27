@@ -9,7 +9,12 @@
     .span4
       .well
         -if logged_in?
-          You are logged in. Go checkin somewhere.
+          -if @suser.admin
+            %h4 How are people using Milieu?
+            %p Avg checkins per user: #{Analytics.avg_checkins_per_user} 
+            %p Avg checkins per venue: #{Analytics.avg_checkins_per_venue} 
+          -else
+            You are logged in. Go checkin somewhere.
         -else
           %h3 Login
           %form{ :action => "/login", :method => "post"}
