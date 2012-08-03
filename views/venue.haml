@@ -22,6 +22,11 @@
             %input{:type=>'submit',:value=>'Upload Venue Image'}
             %input{:type=>'file',:name=>'image'}
     .span6
+      -if @mayor
+        %p
+          %b Mayor
+          =@mayor['name']
+    .span8
       %image{:src => '' << gmap_url(@venue, {:height => 300, :width => 450}) }
   .row-fluid
     .span12

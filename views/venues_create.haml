@@ -1,0 +1,27 @@
+.content
+  .container
+    .row
+      .span12
+        %form{ :action => "/venues/create", :method => "post"}
+          %h1= 'Create Venue'
+          %p Name:
+          %input.form-input{ :name => "name", :type => "text", :size => "30"}
+          %p Address:
+          %input.form-input{ :name => "address", :type => "text", :size => "30"}
+          %p City:
+          %input.form-input{ :name => "city", :type => "text", :size => "30"}
+          %p State:
+          %input.form-input{ :name => "state", :type => "text", :size => "30"}
+          %p Postal Code:
+          %input.form-input{ :name => "postalCode", :type => "text", :size => "30"}
+          %p Country Code:
+          %input.form-input{ :name => "cc", :type => "text", :size => "30"}
+          %p Country:
+          %input.form-input{ :name => "country", :type => "text", :size => "30"}
+          %p Latitude:
+          %input.form-input{ :name => "latitude", :type => "decimal", :size => "30"}
+          %p Longitude:
+          %input.form-input{ :name => "longitude", :type => "decimal", :size => "30"}
+          %br
+          %br
+          %input.btn{ :name => "submit", :type => "submit", :value => "Submit"}

@@ -2,13 +2,40 @@
   .content
     .page-header
       -unless @suser == nil?
-        %h2="Dashboard"
-        %br
-        %image{src: "http://www.gravatar.com/avatar/" << @suser.email_hash.to_s << '.png'}
-
-        %h3= @suser.name.to_s
+        %h1="Dashboard"
+        %hr
+        %table
+          %tbody
+            %tr
+              %td{valign: "top", style: "padding-right: 10px; "}
+                %h2 Profile
+                %br
+                %image{src: "http://www.gravatar.com/avatar/" << @suser.email_hash.to_s << '.png'}
+                %hr
+                %h3= @suser.name.to_s
+                -if @suser.admin?
+                  %p (Admin)
+                  %small
+                  %a{href: "/user/" << @suser.email.to_s << "/profile"} profile
+                %hr
+                  %h3 Checkin Stats
+                  %p
+                    %b Total Checkins
+                    =@user['stats']['total_checkins'].to_s
+                  %p
+                    %b Locations Visited
+                    =@user['stats']['num_locations'].to_s
+                  -if @user['last_checkin_ts']
+                    %p
+                      %b Last Checked In On
+                    %p=@user['last_checkin_ts']
+                    %p
+                      %b At
+                      =@user['last_checkin_name']
+              %td{valign: "top"}
+                %h2 Checkins
+                %image{:src => '' << gmap_multi_url(@venues, {:height => 600, :width => 800}) }
+                
       -else
         redirect '/'
-      %small
-        %a{href: "/user/" << @suser.email.to_s << "/profile"} profile
-    .container#main-topic-nav
+    
