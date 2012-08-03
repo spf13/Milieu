@@ -9,6 +9,8 @@
           %input.form-input{ :name => "email", :type => "text", :size => "20", :value => ""}
           %p Password:
           %input.form-input{ :name => "password", :type => "password", :size => "20", :value => ""}
+          - if ! params[:callback_venue].nil?
+            %input.form-input{ :type => "hidden", :name => "callback_venue", :value => params[:callback_venue] }
           %br
           %br
           %input.btn{ :name => "submit", :type => "submit", :value => "Submit"}

@@ -9,8 +9,10 @@
         =@venue['location']['address'].to_s
         %br= @venue['location']['city'].to_s + ' ' + @venue['location']['state'].to_s + ' ' + @venue['location']['postalCode'].to_s
       %p
-        %a.btn.btn-primary.btn-large{:href => '/venue/' + @venue['_id'].to_s + '/checkin'}
-          Check In Here
+        - if logged_in?
+          %a.btn.btn-primary.btn-large{:href => '/venue/' + @venue['_id'].to_s + '/checkin'}Check In Here
+        - else
+          %a.btn.btn-primary.btn-large{:href => '/login?callback_venue=' + @venue['_id'].to_s }Login First
       %p
         =@venue['stats']['usersCount'].ceil.to_s + ' users have checked in here ' + @venue['stats']['checkinsCount'].ceil.to_s + ' times'
       %p=user_times_at
