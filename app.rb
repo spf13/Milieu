@@ -123,6 +123,10 @@ end
 
 get '/user/:email/profile' do
     @user = User.new_from_email(params[:email])
+    if @user == nil 
+        return haml :profile_missing
+    end
+
     haml :user_profile
 end
 
