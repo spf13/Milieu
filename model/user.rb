@@ -1,7 +1,7 @@
 class User
   include MongoModule
 
-  attr_accessor :_id, :name, :email, :email_hash, :salt, :admin, :hashed_password, :last_checkin_ts, :last_checkin_name, :venues
+  attr_accessor :_id, :name, :email, :email_hash, :salt, :admin, :hashed_password, :last_checkin_ts, :last_checkin_name, :checkins
 
   def init_collection
     @collection = 'users'

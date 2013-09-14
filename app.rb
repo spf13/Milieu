@@ -98,14 +98,14 @@ get '/user/:email/dashboard' do
     @user['stats'] = {}
     @user['stats']['num_locations'] = 0
     @user['stats']['total_checkins'] = 0
-    if @user['venues'] != nil
-        @user['stats']['num_locations'] = @user['venues'].count.to_i
-        @user['venues'].values.each do |v|
+    if @user['checkins'] != nil
+        @user['stats']['num_locations'] = @user['checkins'].count.to_i
+        @user['checkins'].values.each do |v|
             @user['stats']['total_checkins'] += v['count']
         end
-        # Get the venues for this user into a variable.
+        # Get the checkins for this user into a variable.
         @venues = Array.new
-        @user['venues'].keys.each do |k|
+        @user['checkins'].keys.each do |k|
             venue = VENUES.find_one({:_id => BSON::ObjectId(k)})
             @venues.push(venue)
         end
@@ -181,13 +181,13 @@ get '/venue/:_id/checkin' do
 
     # Simultaneously add the users checkin to the venue & return it.
     timestamp = Time.now
-    user = USERS.find_and_modify(:query => { :_id => @suser._id}, :update => {:$inc => {"venues." << object_id.to_s << ".count" => 1},
-                                 :$set => {"venues." << object_id.to_s << ".last_checkin_ts" => timestamp,
+    user = USERS.find_and_modify(:query => { :_id => @suser._id}, :update => {:$inc => {"checkins." << object_id.to_s << ".count" => 1},
+                                 :$set => {"checkins." << object_id.to_s << ".last_checkin_ts" => timestamp,
                                      "last_checkin_ts" => timestamp,
                                      "last_checkin_name" => @venue['name']}}, :new => 1)
 
     # If it's the first time, increment both checkins and users counts
-    if user['venues'][params[:_id]]['count'] == 1
+    if user['checkins'][params[:_id]]['count'] == 1
         VENUES.update({ :_id => @venue['_id']}, { :$inc => { :'stats.usersCount' => 1, :'stats.checkinsCount' => 1}})
         # Else, just the increment the checkins
     else
@@ -212,7 +212,7 @@ get '/venue/:_id/checkin' do
     end
 
     if mayor
-        if mayor['venues'][object_id.to_s]['count'] < user['venues'][object_id.to_s]['count']
+        if mayor['checkins'][object_id.to_s]['count'] < user['checkins'][object_id.to_s]['count']
             VENUES.update({:_id => @venue['_id']}, {:$set => {:'mayor' => @suser._id}})
         end
     else
