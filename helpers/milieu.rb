@@ -2,15 +2,15 @@ helpers do
   def user_times_at
     if logged_in?
         times = 'You have checked in here '
-        if !@user.venues.nil? && !@user.venues[params[:_id]].nil? 
-            times << @user.venues[params[:_id]]['count'].to_s 
+        if !@suser.checkins.nil? && !@suser.checkins[params[:_id]].nil? 
+            times << @suser.checkins[params[:_id]]['count'].to_s 
         else
             times << '0'
         end
         times << ' times'
 
-        if !@user.venues.nil? && !@user.venues[params[:_id]].nil?
-          times << '<br/>You checked in here last on ' << @user.venues[params[:_id]]['last_checkin_ts'].to_s
+        if !@suser.checkins.nil? && !@suser.checkins[params[:_id]].nil?
+          times << '<br/>You checked in here last on ' << @suser.checkins[params[:_id]]['last_checkin_ts'].to_s
         end
     else
         times = 'Please <a href=\'/login\'>login</a> to join them.'
