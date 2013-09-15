@@ -1,17 +1,16 @@
 .content
   .container
     .row
-      .span12
-        %form{ :action => "/login", :method => "post"}
+      .col-md-12
+        %form{:role => "form", :action => "/login", :method => "post"}
           %h1= 'Login'
-          %br
-          %p Email Address:
-          %input.form-input{ :name => "email", :type => "text", :size => "20", :value => ""}
-          %p Password:
-          %input.form-input{ :name => "password", :type => "password", :size => "20", :value => ""}
+          .form-group
+            %label{ :for => "email"} Email:
+            %input.form-control{ :name => "email", :type => "text", :size => "30"}
+          .form-group
+            %label{ :for => "password"} Password:
+            %input.form-control{ :name => "password", :type => "password", :size => "30"}
           - if ! params[:callback_venue].nil?
-            %input.form-input{ :type => "hidden", :name => "callback_venue", :value => params[:callback_venue] }
-          %br
-          %br
-          %input.btn{ :name => "submit", :type => "submit", :value => "Submit"}
-
+            .form-group
+              %input.form-input{ :type => "hidden", :name => "callback_venue", :value => params[:callback_venue] }
+          %input.btn-lg.btn-primary{ :name => "submit", :type => "submit", :value => "Submit"}

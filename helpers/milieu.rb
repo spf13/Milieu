@@ -38,7 +38,7 @@ helpers do
   end
 
   def pager(cur_path)
-      str_out = '<div class="pagination pagination-centered"> <ul>'
+      str_out = '<div class="col-md-6 col-md-offset-3"><ul class="pagination pagination-lg">'
       if @page != 1
             str_out << "<li><a href='#{cur_path}/" << (@page - 1).to_s << "'>Prev</a></li>"
       else

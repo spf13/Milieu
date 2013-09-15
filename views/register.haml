@@ -1,19 +1,26 @@
 .content
   .container
     .row
-      .span12
-        %form{ :action => "/register", :method => "post"}
+      .col-lg-12
+        %form.form-horizontal{ :action => "/register", :method => "post", :role => "form"}
           %h1= 'Register'
-          -#%small= 'and start swapping books now'
-          %p Name:
-          %input.form-input{ :name => "name", :type => "text", :size => "30"}
-          %p Email:
-          %input.form-input{ :name => "email", :type => "text", :size => "30"}
-          %p Password:
-          %input.form-input{ :name => "password", :type => "password", :size => "30"}
+          .form-group
+            %label.control-label.col-lg-2{ :for => "name"} Name:
+            .col-lg-10
+              %input.form-control{ :name => "name", :type => "text", :size => "30"}
+          .form-group
+            %label.control-label.col-lg-2{ :for => "email"} Email:
+            .col-lg-10
+              %input.form-control{ :name => "email", :type => "text", :size => "30"}
+          .form-group
+            %label.control-label.col-lg-2{ :for => "password"} Password:
+            .col-lg-10
+              %input.form-control{ :name => "password", :type => "password", :size => "30"}
           -if @suser and @suser.admin
-            %p Admin 
-            %input.form-input{ :name => "admin", :type => "checkbox"}
+            .form-group
+              %label.control-label.col-lg-2{ :for => "admin"} Admin:
+              .col-lg-10
+                %input.form-input{ :name => "admin", :type => "checkbox"}
           %br
           %br
-          %input.btn{ :name => "submit", :type => "submit", :value => "Submit"}
+          %input.btn.btn-default{ :name => "submit", :type => "submit", :value => "Submit"}

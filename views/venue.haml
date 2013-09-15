@@ -1,6 +1,6 @@
-.container-fluid
-  .row-fluid
-    .span6
+.container
+  .row
+    .col-md-6
       %h2= @venue['name'].to_s
       -if !@venue['image'].nil?
         %p 
@@ -21,19 +21,18 @@
           %form{:method=>'POST',:action=>'/venue/' + @venue['_id'].to_s + '/image', :enctype=>'multipart/form-data'}
             %input{:type=>'submit',:value=>'Upload Venue Image'}
             %input{:type=>'file',:name=>'image'}
-    .span6
       -if @mayor
         %p
           %b Mayor
           =@mayor['name']
-    .span8
+    .col-md-6
       %image{:src => '' << gmap_url(@venue, {:height => 300, :width => 450}) }
-  .row-fluid
-    .span12
+  .row
+    .col-md-12
       %h1 Nearby Venues
-  .row-fluid
+  .row
     - @nearby_venues.each do |nearby|
-      .span3
+      .col-md-3
         %h2
           %a{:href => '/venue/' + nearby['_id'].to_s}= nearby['name'].to_s
         %p
