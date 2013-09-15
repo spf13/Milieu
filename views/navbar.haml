@@ -18,9 +18,9 @@
       %div.navbar-header.navbar-right
         %p.navbar-text
           -if logged_in?
-            %a{:href => "/user/" << @suser.email.to_s << "/dashboard"} 
+            %a{:href => "/user/" << @suser.email.to_s << "/dashboard"}
               %image{:height => 30, :width => 30, :src => "http://www.gravatar.com/avatar/" << @suser.email_hash.to_s << '.png' }
-              #{@suser.email} 
+              #{@suser.email}
             -if @suser.admin
               (Admin)
             |
